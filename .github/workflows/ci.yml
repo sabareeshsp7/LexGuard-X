@@ -1,0 +1,82 @@
+name: LexGuard X — CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-tests:
+    name: Backend Tests (Python)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install --no-cache-dir -r requirements.txt
+
+      - name: Run tests with coverage
+        env:
+          GCP_PROJECT_ID: "test-project"
+          GEMINI_API_KEY: "test-key"
+          UPLOAD_DIR: "/tmp/uploads"
+          CHROMA_PERSIST_DIR: "/tmp/chroma"
+        run: |
+          pip install pytest-cov
+          pytest tests/ --cov=. --cov-report=term-missing --tb=short -v
+
+  frontend-build:
+    name: Frontend Build (TypeScript + Vite)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check & Build
+        run: npm run build
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install bandit (SAST)
+        run: pip install bandit
+
+      - name: Run bandit security scan
+        run: |
+          bandit -r backend/ \
+            --exclude backend/venv,backend/tests \
+            --severity-level medium \
+            -f txt \
+            || true

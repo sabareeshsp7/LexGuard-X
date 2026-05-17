@@ -24,6 +24,7 @@ from typing import Dict
 
 from fastapi import FastAPI, File, UploadFile, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse, Response
 from dotenv import load_dotenv
 
@@ -79,6 +80,7 @@ app.add_middleware(
 )
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RateLimitMiddleware, global_limit=60, analyze_limit=10, window_seconds=60)
+app.add_middleware(GZipMiddleware, minimum_size=1000)  # Compress responses > 1KB
 
 # ─────────────────────────────────────────
 #  Shared service instances (singletons)
@@ -293,8 +295,13 @@ async def analyze_contract(file: UploadFile = File(...)):
     if not file.filename:
         raise HTTPException(status_code=400, detail="No file provided")
 
+    # Sanitize filename — strip path separators to prevent traversal
+    safe_filename = Path(file.filename).name
+    if not safe_filename or safe_filename.startswith("."):
+        raise HTTPException(status_code=400, detail="Invalid filename")
+
     # Validate extension
-    ext = Path(file.filename).suffix.lower()
+    ext = Path(safe_filename).suffix.lower()
     if ext not in ALLOWED_EXTENSIONS:
         raise HTTPException(
             status_code=400,
@@ -313,6 +320,26 @@ async def analyze_contract(file: UploadFile = File(...)):
         raise HTTPException(
             status_code=413,
             detail=f"File too large. Maximum size: {MAX_FILE_SIZE_MB} MB",
+        )
+
+    # Magic-byte signature validation (prevents MIME spoofing)
+    MAGIC_SIGNATURES: dict[str, list[bytes]] = {
+        ".pdf":  [b"%PDF"],
+        ".docx": [b"PK\x03\x04"],  # ZIP-based (OOXML)
+        ".doc":  [b"\xd0\xcf\x11\xe0"],  # OLE2
+        ".png":  [b"\x89PNG"],
+        ".jpg":  [b"\xff\xd8\xff"],
+        ".jpeg": [b"\xff\xd8\xff"],
+        ".tiff": [b"II*\x00", b"MM\x00*"],
+    }
+    sigs = MAGIC_SIGNATURES.get(ext)
+    if sigs and not any(file_bytes.startswith(sig) for sig in sigs):
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"File content does not match '{ext}' format. "
+                "Please upload an authentic, unmodified document."
+            ),
         )
 
     # Generate analysis ID and bootstrap state
