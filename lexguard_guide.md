@@ -33,7 +33,7 @@ User Upload (PDF / DOCX / Scanned Image)
                    v
 +------------------------------------------+
 |  MULTI-AGENT ORCHESTRATION (CrewAI)      |
-|  Powered by: Vertex AI Gemini 1.5 Pro    |
+|  Powered by: Vertex AI Gemini 3.1 Flash Lite    |
 |                                          |
 |  Agent 1: Contract Classifier            |
 |  Agent 2: Legal Risk Analyst             |
@@ -289,7 +289,7 @@ gsutil mb -l us-central1 gs://lexguard-reports-bucket
 #### 4.3 Enable Vertex AI Gemini
 ```bash
 # In Google Cloud Console:
-# Vertex AI -> Model Garden -> Gemini 1.5 Pro -> Enable
+# Vertex AI -> Model Garden -> Gemini 3.1 Flash Lite -> Enable
 
 gcloud config set project YOUR_GCP_PROJECT_ID
 ```
@@ -364,7 +364,7 @@ GCS_CONTRACTS_BUCKET=lexguard-contracts-bucket
 GCS_REPORTS_BUCKET=lexguard-reports-bucket
 
 # Vertex AI
-VERTEX_MODEL=gemini-1.5-pro-001
+VERTEX_MODEL=gemini-3.1-flash-lite
 
 # Azure Document Intelligence
 AZURE_DOC_ENDPOINT=https://YOUR-RESOURCE.cognitiveservices.azure.com/
@@ -524,7 +524,7 @@ def calculate_risk_score(findings: list) -> dict:
 
 | GCP Service | How Used in LexGuard X | Demo Impact |
 |-------------|------------------------|-------------|
-| **Vertex AI Gemini 1.5 Pro** | Powers ALL 8 agents | Critical |
+| **Vertex AI Gemini 3.1 Flash Lite** | Powers ALL 8 agents | Critical |
 | **Cloud Storage** | Stores uploaded contracts and reports | Medium |
 | **Cloud Run** | Hosts FastAPI backend (live URL for demo) | High |
 | **Firebase Hosting** | Hosts React frontend (live URL for demo) | High |
@@ -663,7 +663,7 @@ firebase deploy
 
 | Evaluation Area | LexGuard X Solution | Rating |
 |----------------|---------------------|--------|
-| **Legal Reasoning Quality** | 8 specialized agents + Gemini 1.5 Pro chain-of-thought | 5/5 |
+| **Legal Reasoning Quality** | 8 specialized agents + Gemini 3.1 Flash Lite chain-of-thought | 5/5 |
 | **Risk Identification Accuracy** | RAG-grounded retrieval + multi-agent cross-validation | 5/5 |
 | **Explainability** | Plain-English per clause + voice + visual dashboard | 5/5 |
 | **Practical Applicability** | 6+ contract types, real upload, live analysis | 5/5 |

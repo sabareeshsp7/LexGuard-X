@@ -11,7 +11,7 @@ from models.schemas import (
 
 class LegalAgents:
     """
-    The 8 specialized AI legal agents powered by Vertex AI Gemini 1.5 Pro.
+    The 8 specialized AI legal agents powered by Vertex AI Gemini 3.1 Flash Lite.
     Each agent is an expert persona with a targeted prompt engineering strategy.
     """
 

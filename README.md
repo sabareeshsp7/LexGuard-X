@@ -10,7 +10,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
-[![Vertex AI](https://img.shields.io/badge/Vertex%20AI-Gemini%201.5%20Pro-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/vertex-ai)
+[![Vertex AI](https://img.shields.io/badge/Vertex%20AI-Gemini%203.1%20Flash%20Lite-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/vertex-ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 </div>
@@ -48,7 +48,7 @@ LexGuard X is built for the **Legal Assistance** vertical. Millions of people si
 LexGuard X solves this by acting as a **smart, AI-powered legal assistant** that:
 - Reads and understands any contract document using **Google Cloud Vision OCR**
 - Makes **logical decisions** based on document context and contract type
-- Identifies harmful clauses using **Vertex AI Gemini 1.5 Pro**
+- Identifies harmful clauses using **Vertex AI Gemini 3.1 Flash Lite**
 - Enriches analysis with **Google Cloud Natural Language** entity extraction
 - Persists every result in **Cloud Firestore** for history retrieval
 - Reads findings aloud via **Google Cloud Text-to-Speech** for accessibility
@@ -58,7 +58,7 @@ LexGuard X solves this by acting as a **smart, AI-powered legal assistant** that
 
 ## 🌟 Overview
 
-LexGuard X is a full-stack platform that gives everyday users the power of a senior contract attorney. Upload any legal document and a **pipeline of 8 specialized AI agents** powered by **Google Vertex AI Gemini 1.5 Pro** will analyze it in real-time.
+LexGuard X is a full-stack platform that gives everyday users the power of a senior contract attorney. Upload any legal document and a **pipeline of 8 specialized AI agents** powered by **Google Vertex AI Gemini 3.1 Flash Lite** will analyze it in real-time.
 
 | Output | Description |
 |---|---|
@@ -216,12 +216,12 @@ Results saved to **Firestore** for history retrieval. **Cloud TTS** generates MP
 
 LexGuard X integrates **7 Google Cloud services** meaningfully — each one directly contributing to core functionality:
 
-### 1. Vertex AI — Gemini 1.5 Pro
+### 1. Vertex AI — Gemini 3.1 Flash Lite
 Powers all 8 AI agents. Used for contract classification, risk detection, privacy audit, financial analysis, ambiguity detection, future simulation, negotiation advice, and verdict synthesis.
 
 ```python
 vertexai.init(project=self.project_id, location=self.location)
-self._model = GenerativeModel("gemini-1.5-pro-001")
+self._model = GenerativeModel("gemini-3.1-flash-lite")
 ```
 *Fallback:* Gemini API key via `google-genai` when Vertex credentials are unavailable.
 
@@ -432,7 +432,7 @@ GEMINI_API_KEY=your-gemini-api-key-here
 GCP_PROJECT_ID=your-gcp-project-id
 GCP_LOCATION=us-central1
 GOOGLE_APPLICATION_CREDENTIALS=./gcp-key.json
-VERTEX_MODEL=gemini-1.5-pro-001
+VERTEX_MODEL=gemini-3.1-flash-lite
 ```
 
 > With `GCP_PROJECT_ID` + `gcp-key.json`, all 7 Google services activate automatically:
@@ -595,7 +595,7 @@ gcloud run deploy lexguard-backend \
 |---|---|
 | Backend | Google Cloud Run |
 | Frontend | Firebase Hosting |
-| AI | Vertex AI Gemini 1.5 Pro |
+| AI | Vertex AI Gemini 3.1 Flash Lite |
 | OCR | Cloud Vision API |
 | NLP | Cloud Natural Language |
 | TTS | Cloud Text-to-Speech |

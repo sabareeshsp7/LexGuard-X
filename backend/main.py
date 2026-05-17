@@ -52,7 +52,7 @@ app = FastAPI(
     description=(
         "AI-powered contract intelligence. Upload any legal document and "
         "get risk analysis, privacy audit, negotiation advice, and more — "
-        "powered by Google Vertex AI Gemini 1.5 Pro."
+        "powered by Google Vertex AI Gemini 3.1 Flash Lite."
     ),
     version="1.0.0",
     contact={

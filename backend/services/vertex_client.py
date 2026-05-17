@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # asia-south1 has limited Gemini model support.
-# These regions support gemini-1.5-pro:
+# These regions support gemini-3.1-flash-lite:
 SUPPORTED_REGIONS = ["us-central1", "us-east4", "europe-west4", "asia-northeast1"]
 
 
@@ -20,13 +20,13 @@ class VertexClient:
     def __init__(self):
         self.project_id = os.getenv("GCP_PROJECT_ID", "")
         self.location = os.getenv("GCP_LOCATION", "us-central1")
-        self.model_name = os.getenv("VERTEX_MODEL", "gemini-1.5-pro")
+        self.model_name = os.getenv("VERTEX_MODEL", "gemini-3.1-flash-lite")
         self.credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "./gcp-key.json")
         self._model = None
         self._use_vertex = False
         self._gemini_model_name: str = self.model_name
 
-        # If user set asia-south1 which doesn't fully support Gemini 1.5 Pro,
+        # If user set asia-south1 which doesn't fully support Gemini 3.1 Flash Lite,
         # override to us-central1 automatically
         if self.location not in SUPPORTED_REGIONS:
             print(f"[Vertex AI] Region '{self.location}' may not support {self.model_name}. "
@@ -77,7 +77,7 @@ class VertexClient:
             "Option A (Vertex AI - uses GCP credits):\n"
             "  1. Download gcp-key.json from GCP → IAM → Service Accounts\n"
             "  2. Place it at: backend/gcp-key.json\n"
-            "  3. Ensure VERTEX_MODEL=gemini-1.5-pro in backend/.env\n\n"
+            "  3. Ensure VERTEX_MODEL=gemini-3.1-flash-lite in backend/.env\n\n"
             "Option B (Gemini API - easiest):\n"
             "  1. Go to https://aistudio.google.com/app/apikey\n"
             "  2. Create an API key (FREE tier available)\n"
