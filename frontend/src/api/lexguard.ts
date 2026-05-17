@@ -2,7 +2,9 @@ import axios from 'axios';
 import type { AnalysisResult, AgentEvent } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
+// Derive WebSocket URL from API URL: https → wss, http → ws
+const WS_URL = import.meta.env.VITE_WS_URL ||
+  API_URL.replace(/^https:\/\//, 'wss://').replace(/^http:\/\//, 'ws://');
 
 export const api = axios.create({ baseURL: API_URL });
 
