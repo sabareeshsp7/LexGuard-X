@@ -4,8 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# asia-south1 has limited Gemini model support.
-# These regions support gemini-3.1-flash-lite:
+# These regions support gemini-2.0-flash-lite:
 SUPPORTED_REGIONS = ["us-central1", "us-east4", "europe-west4", "asia-northeast1"]
 
 
@@ -20,11 +19,12 @@ class VertexClient:
     def __init__(self):
         self.project_id = os.getenv("GCP_PROJECT_ID", "")
         self.location = os.getenv("GCP_LOCATION", "us-central1")
-        self.model_name = os.getenv("VERTEX_MODEL", "gemini-3.1-flash-lite")
+        self.model_name = os.getenv("VERTEX_MODEL", "gemini-2.0-flash-lite")
         self.credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "./gcp-key.json")
         self._model = None
         self._use_vertex = False
         self._gemini_model_name: str = self.model_name
+        self._gemini_key: str = os.getenv("GEMINI_API_KEY", "")
 
         # If user set asia-south1 which doesn't fully support Gemini 3.1 Flash Lite,
         # override to us-central1 automatically
@@ -91,15 +91,29 @@ class VertexClient:
         try:
             if self._use_vertex:
                 from vertexai.generative_models import GenerationConfig
-                response = self._model.generate_content(
-                    prompt,
-                    generation_config=GenerationConfig(
-                        temperature=temperature,
-                        max_output_tokens=4096,
+                try:
+                    response = self._model.generate_content(
+                        prompt,
+                        generation_config=GenerationConfig(
+                            temperature=temperature,
+                            max_output_tokens=4096,
+                        )
                     )
-                )
-                return response.text
+                    return response.text
+                except Exception as vertex_err:
+                    # If the Vertex AI model 404s, fall back to Gemini API key
+                    if "404" in str(vertex_err) or "not found" in str(vertex_err).lower():
+                        print(f"[Vertex AI] Model not available, falling back to Gemini API key...")
+                        self._use_vertex = False
+                        self._model = None  # reset so Gemini branch runs
+                        # Recurse once to use Gemini API key path
+                        return self.generate(prompt, temperature)
+                    raise
             else:
+                # Gemini API key path
+                if self._model is None:
+                    from google import genai
+                    self._model = genai.Client(api_key=self._gemini_key)
                 from google.genai import types as genai_types
                 response = self._model.models.generate_content(
                     model=self._gemini_model_name,

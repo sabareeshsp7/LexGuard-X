@@ -96,22 +96,32 @@ class FirestoreClient:
 
         try:
             db = self._get_db()
-            risk_score = result.get("risk_score", {})
+            # risk_score can be a dict, float, int, or string depending on pipeline version
+            raw_risk = result.get("risk_score", {})
+            if isinstance(raw_risk, dict):
+                overall_score = raw_risk.get("overall_score", 0)
+                risk_level   = raw_risk.get("level", "LOW")
+            else:
+                # Scalar value — treat as the score directly
+                try:
+                    overall_score = float(raw_risk)
+                except (TypeError, ValueError):
+                    overall_score = 0
+                risk_level = "LOW"
+
             db.collection(COLLECTION_ANALYSES).document(analysis_id).set({
                 "analysis_id": analysis_id,
-                "filename": result.get("file_name", ""),
-                "contract_type": result.get("contract_type", "Unknown"),
-                "risk_score": risk_score.get("overall_score", 0),
-                "risk_level": risk_score.get("level", "LOW"),
-                "findings_count": len(result.get("findings", [])),
+                "filename": result.get("file_name", "") if isinstance(result, dict) else "",
+                "contract_type": result.get("contract_type", "Unknown") if isinstance(result, dict) else "Unknown",
+                "risk_score": overall_score,
+                "risk_level": risk_level,
+                "findings_count": len(result.get("findings", [])) if isinstance(result, dict) else 0,
                 "status": "complete",
                 "gcs_url": gcs_url,
-                "created_at": result.get("created_at",
-                                         datetime.now(timezone.utc).isoformat()),
+                "created_at": result.get("created_at", datetime.now(timezone.utc).isoformat()) if isinstance(result, dict) else datetime.now(timezone.utc).isoformat(),
                 "result": result,
             }, merge=True)
-            logger.info("[Firestore] Saved completed result for '%s'",
-                        analysis_id)
+            logger.info("[Firestore] Saved completed result for '%s'", analysis_id)
         except Exception as exc:
             logger.error("[Firestore] save_analysis_result failed: %s", exc)
 
