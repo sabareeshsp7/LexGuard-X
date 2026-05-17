@@ -49,10 +49,12 @@ class FirestoreClient:
             "GOOGLE_APPLICATION_CREDENTIALS", "./gcp-key.json"
         )
         self._db = None
+        # On Cloud Run, K_SERVICE is set — ADC handles auth automatically
+        _is_cloud_run = bool(os.getenv("K_SERVICE"))
         self.enabled = (
             _FIRESTORE_AVAILABLE
             and bool(self.project_id)
-            and os.path.exists(self.credentials_path)
+            and (os.path.exists(self.credentials_path) or _is_cloud_run)
         )
 
     def _get_db(self):

@@ -38,6 +38,7 @@ from services.logging_client import cloud_logger
 from services.tts_client import TTSClient
 from services.nlp_client import NLPClient
 from agents.crew_orchestrator import CrewOrchestrator
+from middleware.security import SecurityHeadersMiddleware, RateLimitMiddleware
 
 load_dotenv()
 
@@ -76,6 +77,8 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "Accept"],
 )
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RateLimitMiddleware, global_limit=60, analyze_limit=10, window_seconds=60)
 
 # ─────────────────────────────────────────
 #  Shared service instances (singletons)

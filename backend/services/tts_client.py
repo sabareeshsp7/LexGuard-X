@@ -48,7 +48,7 @@ class TTSClient:
         self.enabled = (
             _TTS_AVAILABLE
             and bool(self.project_id)
-            and os.path.exists(self.credentials_path)
+            and (os.path.exists(self.credentials_path) or bool(os.getenv("K_SERVICE")))
         )
 
     def _get_client(self):

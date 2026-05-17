@@ -14,10 +14,10 @@ class StorageClient:
         self.contracts_bucket = os.getenv("GCS_CONTRACTS_BUCKET", "")
         self.reports_bucket = os.getenv("GCS_REPORTS_BUCKET", "")
         self._client = None
-        self.enabled = bool(
-            self.contracts_bucket and
-            os.path.exists(os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "./gcp-key.json"))
-        )
+        # On Cloud Run, K_SERVICE is set — ADC handles auth automatically (no key file needed)
+        _is_cloud_run = bool(os.getenv("K_SERVICE"))
+        _creds_ok = os.path.exists(os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "./gcp-key.json")) or _is_cloud_run
+        self.enabled = bool(self.contracts_bucket and _creds_ok)
 
     def _get_client(self):
         if self._client is None:

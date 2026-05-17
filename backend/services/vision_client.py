@@ -39,10 +39,12 @@ class VisionClient:
         )
         self.project_id = os.getenv("GCP_PROJECT_ID", "")
         self._client = None
+        # On Cloud Run, K_SERVICE is set — ADC handles auth automatically
+        _is_cloud_run = bool(os.getenv("K_SERVICE"))
         self.enabled = (
             _VISION_AVAILABLE
             and bool(self.project_id)
-            and os.path.exists(self.credentials_path)
+            and (os.path.exists(self.credentials_path) or _is_cloud_run)
         )
 
     def _get_client(self):
