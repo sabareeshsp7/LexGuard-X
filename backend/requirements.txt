@@ -6,21 +6,21 @@
 fastapi==0.111.0
 uvicorn[standard]==0.30.1
 python-multipart==0.0.9
-pydantic==2.7.1
-websockets==12.0
+pydantic>=2.9.0
+websockets>=13.0
 
 # Document Parsing
 azure-ai-documentintelligence==1.0.0b4
 pypdf==4.2.0
 python-docx==1.1.2
-pillow==10.3.0
+pillow>=11.0.0
 
 # ── Google Cloud AI / LLM ─────────────────────────────────
-google-cloud-aiplatform==1.56.0
+google-cloud-aiplatform>=1.97.0
 google-genai==1.0.0
 
 # ── Google Cloud Services ─────────────────────────────────
-google-cloud-storage==2.17.0
+google-cloud-storage>=2.18.0
 google-cloud-vision==3.7.2
 google-cloud-language==2.13.4
 google-cloud-texttospeech==2.16.3
@@ -28,13 +28,13 @@ google-cloud-firestore==2.16.0
 google-cloud-logging==3.10.0
 
 # ── RAG / Vector DB ───────────────────────────────────────
-chromadb==0.5.3
+chromadb>=0.5.15
 sentence-transformers==3.0.1
 
 # ── Testing ───────────────────────────────────────────────
-pytest==8.2.2
-pytest-asyncio==0.23.7
-httpx==0.27.0
+pytest>=9.0.3
+pytest-asyncio>=1.3.0
+httpx>=0.28.1
 
 # ── Utilities ─────────────────────────────────────────────
 python-dotenv==1.0.1

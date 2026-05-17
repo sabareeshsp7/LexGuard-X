@@ -84,7 +84,11 @@ class NLPClient:
             return entities
 
         except Exception as exc:
-            logger.error("[NLP] Entity extraction failed: %s", exc)
+            if "SERVICE_DISABLED" in str(exc) or "403" in str(exc):
+                logger.warning("[NLP] API disabled in GCP project. Disabling NLP enrichment.")
+                self.enabled = False
+            else:
+                logger.error("[NLP] Entity extraction failed: %s", exc)
             return []
 
     def classify_content(self, text: str) -> List[Dict]:
@@ -135,7 +139,11 @@ class NLPClient:
             return result
 
         except Exception as exc:
-            logger.error("[NLP] Sentiment analysis failed: %s", exc)
+            if "SERVICE_DISABLED" in str(exc) or "403" in str(exc):
+                logger.warning("[NLP] API disabled in GCP project. Disabling NLP enrichment.")
+                self.enabled = False
+            else:
+                logger.error("[NLP] Sentiment analysis failed: %s", exc)
             return {"score": 0.0, "magnitude": 0.0}
 
     def is_available(self) -> bool:
