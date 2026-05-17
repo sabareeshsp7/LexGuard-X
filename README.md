@@ -10,7 +10,8 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
-[![Vertex AI](https://img.shields.io/badge/Vertex%20AI-Gemini%203.1%20Flash%20Lite-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/vertex-ai)
+[![Vertex AI](https://img.shields.io/badge/Vertex%20AI-Gemini%202.0%20Flash%20Lite-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/vertex-ai)
+[![CI](https://github.com/sabareeshsp7/LexGuard-X/actions/workflows/ci.yml/badge.svg)](https://github.com/sabareeshsp7/LexGuard-X/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 </div>
@@ -221,7 +222,7 @@ Powers all 8 AI agents. Used for contract classification, risk detection, privac
 
 ```python
 vertexai.init(project=self.project_id, location=self.location)
-self._model = GenerativeModel("gemini-3.1-flash-lite")
+self._model = GenerativeModel("gemini-2.0-flash-lite")
 ```
 *Fallback:* Gemini API key via `google-genai` when Vertex credentials are unavailable.
 
@@ -438,6 +439,13 @@ VERTEX_MODEL=gemini-3.1-flash-lite
 > With `GCP_PROJECT_ID` + `gcp-key.json`, all 7 Google services activate automatically:
 > Cloud Vision, Natural Language, Text-to-Speech, Firestore, Storage, Logging, Vertex AI.
 
+### Live Deployment
+| Environment | URL |
+|---|---|
+| 🌐 Frontend | https://connect-7sp.web.app |
+| ⚙️ Backend API | https://lexguard-backend-tvdarg3hea-uc.a.run.app |
+| 📖 API Docs | https://lexguard-backend-tvdarg3hea-uc.a.run.app/docs |
+
 ---
 
 ## 📡 API Reference
@@ -591,17 +599,18 @@ gcloud run deploy lexguard-backend \
 ```
 
 ### Production Stack
-| Component | Service |
-|---|---|
-| Backend | Google Cloud Run |
-| Frontend | Firebase Hosting |
-| AI | Vertex AI Gemini 3.1 Flash Lite |
-| OCR | Cloud Vision API |
-| NLP | Cloud Natural Language |
-| TTS | Cloud Text-to-Speech |
-| History | Cloud Firestore |
-| Files | Cloud Storage |
-| Logs | Cloud Logging |
+| Component | Service | URL |
+|---|---|---|
+| Backend | Google Cloud Run | https://lexguard-backend-tvdarg3hea-uc.a.run.app |
+| Frontend | Firebase Hosting | https://connect-7sp.web.app |
+| AI | Vertex AI Gemini 2.0 Flash Lite | us-central1 |
+| OCR | Cloud Vision API | us-central1 |
+| NLP | Cloud Natural Language | us-central1 |
+| TTS | Cloud Text-to-Speech | us-central1 |
+| History | Cloud Firestore | us-central1 |
+| Files | Cloud Storage | lexguard-contracts-bucket |
+| Logs | Cloud Logging | connect-7sp project |
+| CI/CD | GitHub Actions + Cloud Build | `.github/workflows/ci.yml` |
 
 ---
 
