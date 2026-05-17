@@ -13,6 +13,15 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+# Guard: google-cloud-language may not be installed
+try:
+    from google.cloud import language_v2 as _language_v2  # type: ignore
+    _NLP_AVAILABLE = True
+except ImportError:
+    _NLP_AVAILABLE = False
+    _language_v2 = None  # type: ignore
+    logger.warning("[NLP] google-cloud-language not installed — NLP enrichment disabled")
+
 
 class NLPClient:
     """
@@ -31,52 +40,46 @@ class NLPClient:
         self.project_id = os.getenv("GCP_PROJECT_ID", "")
         self._client = None
         self.enabled = (
-            bool(self.project_id)
+            _NLP_AVAILABLE
+            and bool(self.project_id)
             and os.path.exists(self.credentials_path)
         )
 
     def _get_client(self):
         """Lazy-initialize the NLP client."""
         if self._client is None:
-            from google.cloud import language_v2  # type: ignore
-            self._client = language_v2.LanguageServiceClient()
+            self._client = _language_v2.LanguageServiceClient()
             logger.info("[NLP] Cloud Natural Language client initialized")
         return self._client
 
     def extract_entities(self, text: str) -> List[Dict]:
         """
         Extract named entities from contract text.
-
-        Returns a list of dicts with keys:
-          name, type, salience, metadata
-        Salience (0-1) indicates how important the entity is in context.
+        Returns a list of dicts: name, type, salience, metadata.
         """
         if not self.enabled:
-            logger.warning("[NLP] Not configured — skipping entity extraction")
             return []
 
         try:
-            from google.cloud import language_v2  # type: ignore
-
             client = self._get_client()
-            document = language_v2.Document(
-                content=text[:10000],  # API limit per request
-                type_=language_v2.Document.Type.PLAIN_TEXT,
+            document = _language_v2.Document(
+                content=text[:10000],
+                type_=_language_v2.Document.Type.PLAIN_TEXT,
             )
             response = client.analyze_entities(
                 document=document,
-                encoding_type=language_v2.EncodingType.UTF8,
+                encoding_type=_language_v2.EncodingType.UTF8,
             )
 
-            entities = []
-            for entity in response.entities:
-                entities.append({
+            entities = [
+                {
                     "name": entity.name,
-                    "type": language_v2.Entity.Type(entity.type_).name,
+                    "type": _language_v2.Entity.Type(entity.type_).name,
                     "salience": round(entity.salience, 4),
                     "metadata": dict(entity.metadata),
-                })
-
+                }
+                for entity in response.entities
+            ]
             logger.info("[NLP] Extracted %d entities", len(entities))
             return entities
 
@@ -85,30 +88,19 @@ class NLPClient:
             return []
 
     def classify_content(self, text: str) -> List[Dict]:
-        """
-        Classify the contract into content categories.
-
-        Returns a list of dicts: { name, confidence }
-        Useful for secondary contract-type verification.
-        """
+        """Classify the contract into Google content categories."""
         if not self.enabled:
             return []
 
         try:
-            from google.cloud import language_v2  # type: ignore
-
             client = self._get_client()
-            document = language_v2.Document(
+            document = _language_v2.Document(
                 content=text[:5000],
-                type_=language_v2.Document.Type.PLAIN_TEXT,
+                type_=_language_v2.Document.Type.PLAIN_TEXT,
             )
             response = client.classify_text(document=document)
-
             categories = [
-                {
-                    "name": cat.name,
-                    "confidence": round(cat.confidence, 4),
-                }
+                {"name": cat.name, "confidence": round(cat.confidence, 4)}
                 for cat in response.categories
             ]
             logger.info("[NLP] Classified into %d categories", len(categories))
@@ -120,25 +112,20 @@ class NLPClient:
 
     def analyze_sentiment(self, text: str) -> Dict:
         """
-        Analyze overall sentiment of contract text.
-        Negative sentiment often correlates with adversarial language.
-
-        Returns: { score: float[-1,1], magnitude: float[0,∞] }
+        Analyze overall contract sentiment.
+        Returns: { score: float[-1,1], magnitude: float[0,inf] }
         """
         if not self.enabled:
             return {"score": 0.0, "magnitude": 0.0}
 
         try:
-            from google.cloud import language_v2  # type: ignore
-
             client = self._get_client()
-            document = language_v2.Document(
+            document = _language_v2.Document(
                 content=text[:10000],
-                type_=language_v2.Document.Type.PLAIN_TEXT,
+                type_=_language_v2.Document.Type.PLAIN_TEXT,
             )
             response = client.analyze_sentiment(document=document)
             sentiment = response.document_sentiment
-
             result = {
                 "score": round(sentiment.score, 4),
                 "magnitude": round(sentiment.magnitude, 4),

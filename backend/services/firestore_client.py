@@ -14,6 +14,14 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+# Guard: google-cloud-firestore may not be installed
+try:
+    from google.cloud import firestore as _firestore_module  # type: ignore
+    _FIRESTORE_AVAILABLE = True
+except ImportError:
+    _FIRESTORE_AVAILABLE = False
+    logger.warning("[Firestore] google-cloud-firestore not installed — history persistence disabled")
+
 COLLECTION_ANALYSES = "analyses"
 
 
@@ -42,15 +50,15 @@ class FirestoreClient:
         )
         self._db = None
         self.enabled = (
-            bool(self.project_id)
+            _FIRESTORE_AVAILABLE
+            and bool(self.project_id)
             and os.path.exists(self.credentials_path)
         )
 
     def _get_db(self):
         """Lazy-initialize the Firestore client."""
         if self._db is None:
-            from google.cloud import firestore  # type: ignore
-            self._db = firestore.Client(project=self.project_id)
+            self._db = _firestore_module.Client(project=self.project_id)
             logger.info("[Firestore] Client initialized for project '%s'",
                         self.project_id)
         return self._db

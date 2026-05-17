@@ -22,7 +22,15 @@ class RAGEngine:
     def _get_client(self):
         if self._client is None:
             import chromadb
-            self._client = chromadb.PersistentClient(path=self.persist_dir)
+            # Try PersistentClient first; fall back to EphemeralClient if
+            # SQLite version or Rust binding issues occur (common on Windows).
+            try:
+                os.makedirs(self.persist_dir, exist_ok=True)
+                self._client = chromadb.PersistentClient(path=self.persist_dir)
+                print(f"[RAG] Using persistent ChromaDB at '{self.persist_dir}'")
+            except Exception as e:
+                print(f"[RAG] PersistentClient failed ({e}) — using EphemeralClient")
+                self._client = chromadb.EphemeralClient()
         return self._client
 
     def _get_embedding_model(self):
@@ -38,21 +46,16 @@ class RAGEngine:
         - First splits on legal clause patterns (numbered sections, articles)
         - Then falls back to sentence-based chunking if needed
         """
-        # Try to split on clause/section markers first
         clause_pattern = re.compile(
-            r'(?=(?:SECTION|ARTICLE|CLAUSE|\d+\.|[A-Z]\.)[\s\S]{10,})',
+            r'(?=(?:SECTION|ARTICLE|CLAUSE|\d+\.|[A-Z]\.)[\\s\\S]{10,})',
             re.IGNORECASE
         )
         splits = clause_pattern.split(text)
-
-        # Filter empty splits
         splits = [s.strip() for s in splits if len(s.strip()) > 50]
 
         if len(splits) < 3:
-            # Fall back to sliding window chunking
             splits = self._sliding_window_chunk(text)
 
-        # Ensure no chunk is too large
         final_chunks = []
         for chunk in splits:
             if len(chunk) <= self.chunk_size:
@@ -83,7 +86,6 @@ class RAGEngine:
 
         collection_name = f"lexguard_{analysis_id[:8]}"
 
-        # Delete if exists (fresh analysis)
         try:
             client.delete_collection(collection_name)
         except Exception:
@@ -94,7 +96,6 @@ class RAGEngine:
             metadata={"analysis_id": analysis_id}
         )
 
-        # Generate embeddings in batches
         batch_size = 32
         for i in range(0, len(chunks), batch_size):
             batch = chunks[i:i + batch_size]

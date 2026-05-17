@@ -14,6 +14,15 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+# Guard: google-cloud-vision may not be installed
+try:
+    from google.cloud import vision as _vision_module  # type: ignore
+    _VISION_AVAILABLE = True
+except ImportError:
+    _VISION_AVAILABLE = False
+    _vision_module = None  # type: ignore
+    logger.warning("[Vision] google-cloud-vision not installed — OCR via Vision disabled")
+
 
 class VisionClient:
     """
@@ -31,15 +40,15 @@ class VisionClient:
         self.project_id = os.getenv("GCP_PROJECT_ID", "")
         self._client = None
         self.enabled = (
-            bool(self.project_id)
+            _VISION_AVAILABLE
+            and bool(self.project_id)
             and os.path.exists(self.credentials_path)
         )
 
     def _get_client(self):
         """Lazy-initialize the Vision client."""
         if self._client is None:
-            from google.cloud import vision  # type: ignore
-            self._client = vision.ImageAnnotatorClient()
+            self._client = _vision_module.ImageAnnotatorClient()
             logger.info("[Vision] Cloud Vision client initialized")
         return self._client
 
@@ -58,24 +67,16 @@ class VisionClient:
             )
 
         try:
-            from google.cloud import vision  # type: ignore
-
             client = self._get_client()
-            image = vision.Image(content=image_bytes)
-
+            image = _vision_module.Image(content=image_bytes)
             response = client.document_text_detection(image=image)
 
             if response.error.message:
-                raise RuntimeError(
-                    f"Vision API error: {response.error.message}"
-                )
+                raise RuntimeError(f"Vision API error: {response.error.message}")
 
             full_text = response.full_text_annotation.text
-            char_count = len(full_text)
-            logger.info(
-                "[Vision] OCR extracted %d characters from '%s'",
-                char_count, filename,
-            )
+            logger.info("[Vision] OCR extracted %d characters from '%s'",
+                        len(full_text), filename)
             return full_text
 
         except Exception as exc:

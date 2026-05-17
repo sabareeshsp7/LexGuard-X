@@ -38,7 +38,6 @@ export default function UploadZone({ onUpload, isUploading }: Props) {
     disabled: isUploading,
   });
 
-  // Spread getRootProps onto a plain <div> to avoid Framer Motion's onDrag type conflict
   const rootProps = getRootProps();
 
   return (
@@ -46,69 +45,63 @@ export default function UploadZone({ onUpload, isUploading }: Props) {
       <div
         {...rootProps}
         style={{
-          border: `2px dashed ${isDragActive ? 'var(--gold)' : 'var(--border-strong)'}`,
-          borderRadius: 'var(--radius)',
-          padding: '2.5rem 1.5rem',
+          border: `2px dashed ${isDragActive ? '#1d4ed8' : '#d1d5db'}`,
+          borderRadius: 10,
+          padding: '2rem 1.5rem',
           textAlign: 'center',
           cursor: isUploading ? 'not-allowed' : 'pointer',
-          background: isDragActive ? 'var(--gold-pale)' : 'var(--bg-primary)',
-          transition: 'all 0.25s ease',
+          background: isDragActive ? '#eff6ff' : '#fafafa',
+          transition: 'all 0.2s ease',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
         <input {...getInputProps()} />
-
         <AnimatePresence mode="wait">
           {isUploading ? (
             <motion.div key="uploading" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <div style={{ marginBottom: '1rem' }}>
-                <div className="spinner" style={{ width: 36, height: 36, margin: '0 auto', borderTopColor: 'var(--navy)' }} />
+                <div className="spinner" style={{ width: 34, height: 34, margin: '0 auto', borderTopColor: '#1d4ed8' }} />
               </div>
-              <p style={{ color: 'var(--navy)', fontWeight: 700, fontSize: '1rem' }}>
+              <p style={{ color: '#1a2e4a', fontWeight: 700, fontSize: '0.95rem' }}>
                 Uploading &amp; starting analysis...
               </p>
-              <p style={{ color: 'var(--text-secondary)', marginTop: 6, fontSize: '0.85rem' }}>
+              <p style={{ color: '#6b7280', marginTop: 6, fontSize: '0.82rem' }}>
                 AI agents are being deployed
               </p>
             </motion.div>
           ) : isDragActive ? (
             <motion.div key="drag" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-              <CheckCircle size={44} color="var(--gold)" style={{ margin: '0 auto 1rem' }} />
-              <p style={{ color: 'var(--gold)', fontWeight: 700, fontSize: '1.1rem' }}>
+              <CheckCircle size={40} color="#1d4ed8" style={{ margin: '0 auto 0.75rem' }} />
+              <p style={{ color: '#1d4ed8', fontWeight: 700, fontSize: '1rem' }}>
                 Drop to analyze!
               </p>
             </motion.div>
           ) : (
             <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <div style={{
-                width: 64, height: 64, margin: '0 auto 1.25rem',
-                borderRadius: 16,
-                background: 'var(--navy-pale)',
-                border: '1px solid #c8d5e8',
+                width: 52, height: 52, margin: '0 auto 1rem',
+                borderRadius: 12, background: '#eff6ff',
+                border: '1px solid #bfdbfe',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <Upload size={28} color="var(--navy)" />
+                <Upload size={24} color="#1d4ed8" />
               </div>
-              <p style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-primary)' }}>
+              <p style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 4, color: '#111827' }}>
                 Drop your contract here
               </p>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.25rem', fontSize: '0.85rem' }}>
-                or click to browse — up to 20MB
+              <p style={{ color: '#9ca3af', marginBottom: '1rem', fontSize: '0.82rem' }}>
+                or click to browse — PDF, DOCX, PNG, JPG, TIFF up to 20 MB
               </p>
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap' }}>
                 {['PDF', 'DOCX', 'PNG', 'JPG', 'TIFF'].map(type => (
                   <span key={type} style={{
-                    padding: '3px 10px', borderRadius: 99,
-                    background: 'white',
-                    border: '1px solid var(--border-strong)',
-                    fontSize: '0.72rem',
-                    color: 'var(--text-secondary)',
-                    display: 'flex', alignItems: 'center', gap: 4,
-                    fontWeight: 600,
+                    padding: '2px 10px', borderRadius: 99,
+                    background: 'white', border: '1px solid #e5e7eb',
+                    fontSize: '0.7rem', color: '#6b7280',
+                    display: 'flex', alignItems: 'center', gap: 3, fontWeight: 600,
                   }}>
-                    <FileText size={10} />
-                    {type}
+                    <FileText size={9} />{type}
                   </span>
                 ))}
               </div>
@@ -119,15 +112,10 @@ export default function UploadZone({ onUpload, isUploading }: Props) {
 
       {error && (
         <motion.div
-          initial={{ opacity: 0, y: -6 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            color: 'var(--critical)', marginTop: 10,
-            fontSize: '0.82rem',
-          }}
+          initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#dc2626', marginTop: 8, fontSize: '0.82rem' }}
         >
-          <AlertCircle size={14} /> {error}
+          <AlertCircle size={13} /> {error}
         </motion.div>
       )}
     </div>

@@ -12,6 +12,15 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+# Guard: google-cloud-texttospeech may not be installed
+try:
+    from google.cloud import texttospeech as _tts_module  # type: ignore
+    _TTS_AVAILABLE = True
+except ImportError:
+    _TTS_AVAILABLE = False
+    _tts_module = None  # type: ignore
+    logger.warning("[TTS] google-cloud-texttospeech not installed — audio output disabled")
+
 
 class TTSClient:
     """
@@ -37,15 +46,15 @@ class TTSClient:
         self.project_id = os.getenv("GCP_PROJECT_ID", "")
         self._client = None
         self.enabled = (
-            bool(self.project_id)
+            _TTS_AVAILABLE
+            and bool(self.project_id)
             and os.path.exists(self.credentials_path)
         )
 
     def _get_client(self):
         """Lazy-initialize the TTS client."""
         if self._client is None:
-            from google.cloud import texttospeech  # type: ignore
-            self._client = texttospeech.TextToSpeechClient()
+            self._client = _tts_module.TextToSpeechClient()
             logger.info("[TTS] Cloud Text-to-Speech client initialized")
         return self._client
 
@@ -85,32 +94,25 @@ class TTSClient:
             raise ValueError("Text content cannot be empty")
 
         try:
-            from google.cloud import texttospeech  # type: ignore
-
             client = self._get_client()
-
-            synthesis_input = texttospeech.SynthesisInput(text=clean_text)
-            voice_params = texttospeech.VoiceSelectionParams(
+            synthesis_input = _tts_module.SynthesisInput(text=clean_text)
+            voice_params = _tts_module.VoiceSelectionParams(
                 language_code=language_code,
                 name=voice_name,
             )
-            audio_config = texttospeech.AudioConfig(
-                audio_encoding=texttospeech.AudioEncoding.MP3,
+            audio_config = _tts_module.AudioConfig(
+                audio_encoding=_tts_module.AudioEncoding.MP3,
                 speaking_rate=speaking_rate,
                 pitch=pitch,
                 effects_profile_id=["headphone-class-device"],
             )
-
             response = client.synthesize_speech(
                 input=synthesis_input,
                 voice=voice_params,
                 audio_config=audio_config,
             )
-
-            logger.info(
-                "[TTS] Synthesized %d chars → %d bytes audio",
-                len(clean_text), len(response.audio_content),
-            )
+            logger.info("[TTS] Synthesized %d chars — %d bytes",
+                        len(clean_text), len(response.audio_content))
             return response.audio_content
 
         except Exception as exc:
