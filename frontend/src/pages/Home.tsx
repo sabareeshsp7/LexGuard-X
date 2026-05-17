@@ -81,8 +81,8 @@ export default function Home() {
           <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,#1e3a8a,#1d4ed8)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Scale size={17} color="#fff" />
           </div>
-          <span style={{ fontWeight: 800, fontSize: '1.1rem', color: '#1a2e4a', letterSpacing: '-0.02em' }}>Lexi</span>
-          <span style={{ fontWeight: 800, fontSize: '1.1rem', color: '#1d4ed8', letterSpacing: '-0.02em', marginLeft: -6 }}>Ware</span>
+          <span style={{ fontWeight: 800, fontSize: '1.1rem', color: '#1a2e4a', letterSpacing: '-0.02em' }}>Lex</span>
+          <span style={{ fontWeight: 800, fontSize: '1.1rem', color: '#1d4ed8', letterSpacing: '-0.02em', marginLeft: -6 }}>Guard X</span>
           <span style={{ fontSize: '0.62rem', color: '#9ca3af', marginLeft: 4, fontWeight: 500 }}>AI Contract Intelligence</span>
         </div>
 
@@ -143,7 +143,7 @@ export default function Home() {
                     <UploadZone onUpload={handleUpload} isUploading={uploading} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.9rem 1.5rem', borderTop: '1px solid #f3f4f6' }}>
-                    <span style={{ fontSize: '0.73rem', color: '#9ca3af' }}>LexiWare does not store your documents after analysis.</span>
+                    <span style={{ fontSize: '0.73rem', color: '#9ca3af' }}>LexGuard X does not store your documents after analysis.</span>
                     <button onClick={() => scrollTo('analyze')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg,#1e3a8a,#1d4ed8)', border: 'none', cursor: 'pointer' }}>
                       <Scale size={15} color="#fff" />
                     </button>
@@ -262,16 +262,16 @@ export default function Home() {
       {/* ── About ── */}
       <section id="about" style={{ padding: '4.5rem 2rem', background: '#f9fafb', borderTop: '1px solid #e5e7eb' }}>
         <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1d4ed8', marginBottom: '0.6rem' }}>About LexiWare</p>
+          <p style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1d4ed8', marginBottom: '0.6rem' }}>About LexGuard X</p>
           <h2 style={{ fontSize: 'clamp(1.5rem,3vw,2.2rem)', fontWeight: 800, color: '#1a2e4a', letterSpacing: '-0.02em', marginBottom: '1.25rem' }}>
             Know your rights{' '}
             <span style={{ background: 'linear-gradient(135deg,#1d4ed8,#8b5cf6,#ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>before you sign.</span>
           </h2>
           <p style={{ color: '#4b5563', lineHeight: 1.8, fontSize: '0.95rem', marginBottom: '1rem' }}>
-            LexiWare is an AI-powered contract intelligence platform that helps individuals and organizations understand the legal implications of agreements before signing. Millions of people sign contracts every day without fully understanding what they agree to — employment terms, rental leases, SaaS subscriptions, insurance policies, and NDAs often contain hidden risks.
+            LexGuard X is an AI-powered contract intelligence platform that helps individuals and organizations understand the legal implications of agreements before signing. Millions of people sign contracts every day without fully understanding what they agree to — employment terms, rental leases, SaaS subscriptions, insurance policies, and NDAs often contain hidden risks.
           </p>
           <p style={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.88rem', marginBottom: '2rem' }}>
-            Built on Google Vertex AI Gemini, Cloud Vision OCR, Cloud Natural Language, and a RAG-powered multi-agent pipeline — LexiWare delivers legal clarity without requiring a lawyer.
+            Built on Google Vertex AI Gemini, Cloud Vision OCR, Cloud Natural Language, and a RAG-powered multi-agent pipeline — LexGuard X delivers legal clarity without requiring a lawyer.
           </p>
           <button onClick={() => scrollTo('analyze')} style={{ background: 'linear-gradient(135deg,#1e3a8a,#1d4ed8)', color: '#fff', border: 'none', borderRadius: 8, padding: '13px 32px', fontSize: '0.95rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 14px rgba(29,78,216,0.3)', fontFamily: 'inherit' }}>
             Analyze Your Contract Now
@@ -283,7 +283,7 @@ export default function Home() {
       <footer style={{ background: '#fff', borderTop: '1px solid #e5e7eb', padding: '1.25rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
           <Scale size={15} color="#1a2e4a" />
-          <span style={{ fontWeight: 800, color: '#1a2e4a', fontSize: '0.9rem' }}>LexiWare</span>
+          <span style={{ fontWeight: 800, color: '#1a2e4a', fontSize: '0.9rem' }}>LexGuard X</span>
           <span style={{ color: '#9ca3af', fontSize: '0.73rem' }}>— AI Contract Intelligence</span>
         </div>
         <p style={{ fontSize: '0.72rem', color: '#9ca3af' }}>AI analysis is not legal advice. Consult a qualified attorney for important decisions.</p>

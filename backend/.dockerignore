@@ -1,0 +1,15 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+gcp-key.json
+chroma_db/
+uploads/
+*.db
+.pytest_cache/
+tests/
+.gitignore
+README.md
+Dockerfile
